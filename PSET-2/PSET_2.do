@@ -1,21 +1,24 @@
 
-use "/Users/natan/Dev/econometrics_381-2/PSET-2/bankruns.dta", clear
+use "C:\Dev\econometrics_theory\PSET-2\bankruns.dta", clear
+// use "/Users/natan/Dev/econometrics_381-2/PSET-2/bankruns.dta", clear
 
-estpost tabstat minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj, by(sd75) stat(mean sd) nototal columns(stat)
+estpost tabstat minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, by(sd75) stat(mean sd) nototal columns(stat)
 
-estpost ttest minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj, by(sd75)
+estpost ttest minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, by(sd75)
 
-esttab using "/Users/natan/Dev/econometrics_381-2/PSET-2/table1.tex", replace  ///
+// "C:\Dev\econometrics_theory\PSET-2\table1.tex" /Users/natan/Dev/econometrics_381-2/PSET-2/table1.tex"
+esttab using "C:\Dev\econometrics_theory\PSET-2\table1.tex", replace  ///
 	cells("mu_1(fmt(3)) N_1(fmt(0)) mu_2(fmt(3)) N_2(fmt(0)) b(star) se(par)") ///
-	collabels("$\substack{\text{Runner} \\ \text{Mean} }$" /// 
-	"$\substack{\text{Runner} \\ \text{N} }$" /// 
+	collabels( ///
 	"$\substack{\text{Non-Runner} \\ \text{Mean} }$" ///
 	"$\substack{\text{Non-Runner} \\ \text{N} }$" /// 
+	"$\substack{\text{Runner} \\ \text{Mean} }$" /// 
+	"$\substack{\text{Runner} \\ \text{N} }$" /// 
 	"Difference" "Standard Error" "N" ) ///
-	coeflabels(minority_dummy "Minority" ins_adj /// 
+	coeflabels(minority_dummy "Minority" trans1 "Transactions" ins_adj /// 
 	"\substack{\text{Insured Deposit} \\ \text{Amount} }" ///
 	accdays_f "Account Days" link_loan_rel_bf_fc1 ///
-	"Posessed Loans" bal_adj "Balance Amount") nonumbers ///
+	"Has Loans" bal_adj "Balance Amount") nonumbers ///
 	booktabs nonotes 
 
 // esttab using "/Users/natan/Dev/econometrics_381-2/PSET-2/table1.tex", ///
@@ -33,21 +36,24 @@ esttab using "/Users/natan/Dev/econometrics_381-2/PSET-2/table1.tex", replace  /
 // 	labels("\midrule Observations")) ///
 // 	prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) 
 
-use "/Users/natan/Dev/econometrics_381-2/PSET-2/bankruns.dta", clear
+use "C:\Dev\econometrics_theory\PSET-2\bankruns.dta", clear
+// use "/Users/natan/Dev/econometrics_381-2/PSET-2/bankruns.dta", clear
 
-eststo LPM : reg sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj, r
-eststo LOG : logit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj, r
-eststo PRO : probit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj, r
+eststo LPM : reg sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, r
+eststo LOG : logit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, r
+eststo PRO : probit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, r
 
-esttab LPM LOG PRO using "/Users/natan/Dev/econometrics_381-2/PSET-2/table2.tex", ///
-	coeflabels(minority_dummy "Minority" ins_adj /// 
-	"$\substack{\text{Insured Deposit} \\ \text{Amount} }$" ///
+// "C:\Dev\econometrics_theory\PSET-2\table2.tex" "/Users/natan/Dev/econometrics_381-2/PSET-2/table2.tex"
+esttab LPM LOG PRO using "C:\Dev\econometrics_theory\PSET-2\table2.tex", ///
+	coeflabels(minority_dummy "Minority" trans1 "Transactions" ins_adj /// 
+	"Above Insured" ///
 	accdays_f "Account Days" link_loan_rel_bf_fc1 ///
-	"Posessed Loans" bal_adj "Balance Amount") ///
+	"Has Loans" bal_adj "Balance Amount") ///
 	mtitles("LPM" "LOGIT" "PROBIT") ///
 	booktabs fragment label replace /// 
 	nonotes nonumbers nonumbers ///
-	stats(N, fmt(%18.0g) labels("\midrule Observations"))
+	stats(N, fmt(%18.0g) labels("\midrule Observations")) ///
+	se
 	
 // keep(_cons treatment area_debt_total_base area_literate_base area_exp_pc_mean_base) ///
 // coeflabels(treatment "Treatment" area_debt_total_base "Area Debt" ///
@@ -60,7 +66,26 @@ esttab LPM LOG PRO using "/Users/natan/Dev/econometrics_381-2/PSET-2/table2.tex"
 // mgroups("\textbf{\emph{Dependent Variables}}", pattern(1 0 0 0) ///
 // prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}))
 
+use "C:\Dev\econometrics_theory\PSET-2\bankruns.dta", clear
+// use "/Users/natan/Dev/econometrics_381-2/PSET-2/bankruns.dta", clear
 
+logit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, r
+eststo LOG: estpost margins, dydx(minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1)
+probit sd75 minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1, r
+eststo PRO: estpost margins, dydx(minority_dummy ins_adj accdays_f link_loan_rel_bf_fc1 bal_adj trans1)
+
+
+// "C:\Dev\econometrics_theory\PSET-2\table2.tex" "/Users/natan/Dev/econometrics_381-2/PSET-2/table2.tex"
+esttab LOG PRO using "C:\Dev\econometrics_theory\PSET-2\table3.tex", ///
+	coeflabels(minority_dummy "Minority" trans1 "Transactions" ins_adj /// 
+	"Above Insured" ///
+	accdays_f "Account Days" link_loan_rel_bf_fc1 ///
+	"Has Loans" bal_adj "Balance Amount") ///
+	mtitles("LPM" "LOGIT" "PROBIT") ///
+	booktabs fragment label replace /// 
+	nonotes nonumbers nonumbers ///
+	stats(N, fmt(%18.0g) labels("\midrule Observations")) ///
+	se
 
   
   
